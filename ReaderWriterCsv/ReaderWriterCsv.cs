@@ -1,12 +1,13 @@
-﻿using System.Reflection;
+﻿using System.ComponentModel;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace ReaderWriterCsv
 {
     public static class ReaderWriterCsv
     {
-        // if class.fieldName.Contains("Date") => parse to DateTime
-        // if class.fieldName.Contains("Id") => not included
+        // If class.fieldName.Contains("Id") => not included
+        // Don't use titles in input
         public static List<T> ReadFromCsv<T>(string path, char separator)
         {
             var inDatas = new List<T>();
@@ -58,10 +59,11 @@ namespace ReaderWriterCsv
 
                     if (value != null && !String.IsNullOrEmpty(rightData))
                     {
-                        if (fields[i].Contains("Date"))
-                            value.SetValue(item, DateTime.Parse(rightData));
-                        else
-                            value.SetValue(item, rightData);
+                        var fieldType = value.FieldType;
+                        var resultData = TypeDescriptor.GetConverter(fieldType)
+                            .ConvertFrom(rightData);
+
+                        value.SetValue(item, resultData);
                     }
                 }
             }
@@ -70,7 +72,7 @@ namespace ReaderWriterCsv
         }
 
         // Экранирование if class.field.Contains(separator)
-        public static void SaveToCsv<T>(List<T> outDatas, string pathOut, char separator)
+        public static void SaveToCsv<T>(List<T> outDatas, string pathOut, char separator, bool addTitles)
         {
             var fields = GetFields<T>()
                 .Where(x => !x.Contains("<Id>"))
@@ -84,7 +86,8 @@ namespace ReaderWriterCsv
 
             using (var writer = new StreamWriter(pathOut))
             {
-                writer.WriteLine(String.Join($"{separator}", titles));
+                if (addTitles)
+                    writer.WriteLine(String.Join($"{separator}", titles));
 
                 for (int i = 0; i < outDatas.Count; i++)
                 {

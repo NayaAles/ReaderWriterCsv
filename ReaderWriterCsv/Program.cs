@@ -1,13 +1,13 @@
 ﻿using ReaderWriterCsv;
 
-var currentDirectory = CurrentDirectory.Get();
-var fileName = "test";
+var currentDirectory = CurrentDirectory.Get(4);
+const string FileName = "test";
 
-var filePath = currentDirectory + @$"\{fileName}.csv";
-var filePathOut = currentDirectory + @$"\{fileName}Out.csv";
+var filePath = currentDirectory + @$"\{FileName}.csv";
+var filePathOut = currentDirectory + @$"\{FileName}Out.csv";
 
 var inDatas = ReaderWriterCsv.ReaderWriterCsv.ReadFromCsv<InData>(filePath, ';');
 
-ReaderWriterCsv.ReaderWriterCsv.SaveToCsv<InData>(inDatas, filePathOut, ';');
+ReaderWriterCsv.ReaderWriterCsv.SaveToCsv<InData>(inDatas, filePathOut, ';', true);
 
 

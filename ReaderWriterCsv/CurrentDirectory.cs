@@ -3,7 +3,7 @@ namespace ReaderWriterCsv
 {
     public static class CurrentDirectory
     {
-        public static string Get()
+        public static string Get(int depth)
         {
             var startDirectory = new DirectoryInfo(Directory.GetCurrentDirectory())
                 .Parent;
@@ -19,7 +19,7 @@ namespace ReaderWriterCsv
                     startDirectory = startDirectory.Parent;
                 }
             }
-            while (i < 4);
+            while (i < depth);
 
             return currentDirectory;
         }
